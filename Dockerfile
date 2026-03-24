@@ -1,10 +1,13 @@
-FROM python:3.9.6
+FROM python:3.9-slim
 
-workdir app
+workdir /app
 
 COPY . .
 
-RUN pip install -r requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+RUN useradd --create-home appuser && chown -R appuser:appuser /app
+USER appuser
 
 EXPOSE 9696
 
