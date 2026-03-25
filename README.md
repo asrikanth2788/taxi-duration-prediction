@@ -184,50 +184,52 @@ http://localhost:9696
 
 The service exposes the same route `/predict` for both:
 
-- `POST`
-- `GET`
+- `GET /health` → health check
+- `GET /predict` → predict using query parameters
+- `POST /predict` → predict using JSON payload
 
 ---
 
-### POST Request
+## API Examples
 
-Use a JSON body.
+### Health check
 
-#### Example with `curl`
+```bash
+curl http://localhost:9696/health
+```
+
+Response:
+
+```json
+{"status":"ok"}
+```
+
+### Predict (POST)
 
 ```bash
 curl -X POST http://localhost:9696/predict \
   -H "Content-Type: application/json" \
-  -d '{
-    "PULocationID": 130,
-    "DOLocationID": 205,
-    "trip_distance": 3.66
-  }'
+  -d '{"PULocationID":130,"DOLocationID":205,"trip_distance":3.66}'
 ```
 
-#### Example response
+Response format:
 
 ```json
-15.90
+{"predicted_duration": 15.9}
 ```
 
----
-
-### GET Request
-
-Pass values as query parameters.
-
-#### Example with `curl`
+### Predict (GET)
 
 ```bash
 curl "http://localhost:9696/predict?PULocationID=130&DOLocationID=205&trip_distance=3.66"
 ```
 
-#### Example response
+Response format:
 
 ```json
-15.90
+{"predicted_duration": 15.9}
 ```
+
 
 ---
 
@@ -342,63 +344,6 @@ Then call:
 
 ```text
 http://localhost:9697
-```
-
----
-
-## Future Improvements
-
-Possible enhancements for this project:
-
-- Add request validation
-- Return structured JSON like:
-
-  ```json
-  {
-    "predicted_duration": 15.90
-  }
-  ```
-
-- Load the model once at app startup instead of on every request
-- Add health check endpoint such as `/health`
-- Add logging
-- Add unit and integration tests
-- Support multiple model versions
-
----
-
-## Example End-to-End Workflow
-
-### Local
-
-```bash
-cd <project_directory>
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python predict.py
-```
-
-In a second terminal:
-
-```bash
-curl -X POST http://localhost:9696/predict \
-  -H "Content-Type: application/json" \
-  -d '{"PULocationID":130,"DOLocationID":205,"trip_distance":3.66}'
-```
-
-### Docker
-
-```bash
-cd <project_directory>
-docker build -t taxi-duration-prediction-service .
-docker run -it --rm -p 9696:9696 taxi-duration-prediction-service
-```
-
-In a second terminal:
-
-```bash
-curl "http://localhost:9696/predict?PULocationID=130&DOLocationID=205&trip_distance=3.66"
 ```
 
 ---
